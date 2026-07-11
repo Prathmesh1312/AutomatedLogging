@@ -1,0 +1,74 @@
+# Infrastructure Topology Configuration
+# Used by the BSES state generator to assign and lookup entity IPs/MACs and route logs
+
+network:
+  domain: "internal.apexbank.com"
+  subnets:
+    dmz:
+      cidr: "10.100.1.0/24"
+      description: "DMZ for API gateways and public load balancers"
+      gateway: "10.100.1.1"
+    core:
+      cidr: "10.100.2.0/24"
+      description: "Secure Core Database and Application Subnet"
+      gateway: "10.100.2.1"
+    corporate:
+      cidr: "10.100.10.0/24"
+      description: "HQ Employee Workstations and Active Directory Domain Controller"
+      gateway: "10.100.10.1"
+    retail:
+      cidr: "10.200.0.0/16"
+      description: "Retail Branch Offices (Workstations, Local database replicas, VPN Gateways)"
+      gateway: "10.200.0.1"
+
+nodes:
+  api_gateways:
+    - name: "api-gw-01"
+      ip: "10.100.1.10"
+      mac: "00:50:56:a1:b2:01"
+    - name: "api-gw-02"
+      ip: "10.100.1.11"
+      mac: "00:50:56:a1:b2:02"
+
+  core_databases:
+    - name: "db-main-primary"
+      ip: "10.100.2.20"
+      mac: "00:50:56:b3:c4:10"
+      type: "postgresql"
+    - name: "db-main-replica"
+      ip: "10.100.2.21"
+      mac: "00:50:56:b3:c4:11"
+      type: "postgresql"
+    - name: "db-dw-warehouse"
+      ip: "10.100.2.30"
+      mac: "00:50:56:b3:c4:20"
+      type: "oracle"
+
+  infrastructure_servers:
+    - name: "hq-ad-dc01"
+      ip: "10.100.10.10"
+      mac: "00:50:56:d5:e6:01"
+      type: "windows_active_directory"
+    - name: "hq-mail-server"
+      ip: "10.100.10.15"
+      mac: "00:50:56:d5:e6:02"
+      type: "linux_mail"
+    - name: "hq-file-server"
+      ip: "10.100.10.25"
+      mac: "00:50:56:d5:e6:03"
+      type: "linux_smb"
+
+  firewalls:
+    - name: "hq-perimeter-fw"
+      ip: "192.168.1.1"
+      mac: "00:0c:29:f8:a1:b2"
+    - name: "hq-internal-segmenter"
+      ip: "10.100.0.1"
+      mac: "00:0c:29:f8:a1:c3"
+
+branches:
+  count: 20
+  subnets:
+    cidr_pattern: "10.200.{branch_id}.0/24"  # branch_id from 1 to 20
+    atms_per_branch: 5
+    workstations_per_branch: 10

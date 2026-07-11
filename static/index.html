@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSES | Banking Security Environment Simulator Dashboard</title>
+    <meta name="description" content="Management portal for the Banking Security Environment Simulator (BSES). Monitor real-time logs, configure subnets, and trigger manual attack scenarios.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-icon">🛡️</span>
+                <div class="logo-text">
+                    <h1>BSES Portal</h1>
+                    <p>Banking Security Environment Simulator</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="pulse-dot" id="system-pulse"></span>
+                <span id="system-status-text">CONNECTING</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace Grid -->
+        <main class="workspace-grid">
+            
+            <!-- Left Panel: Controls & Metrics -->
+            <section class="panel control-panel" id="controls-section">
+                <h2>System Control</h2>
+                
+                <!-- Live Dials -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="metric-label">Realized Throughput</span>
+                        <div class="metric-value"><span id="metric-eps">0</span> <span class="unit">EPS</span></div>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Total Logs Emitted</span>
+                        <div class="metric-value" id="metric-total">0</div>
+                    </div>
+                </div>
+
+                <!-- Simulation Settings -->
+                <div class="control-group">
+                    <label class="group-title">Engine Controller</label>
+                    <div class="toggle-container">
+                        <span>Simulator Running State</span>
+                        <button class="btn btn-primary" id="btn-toggle-pause">PAUSE ENGINE</button>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span>Target Logging Speed (EPS)</span>
+                            <span class="slider-val" id="val-eps">1000</span>
+                        </div>
+                        <input type="range" id="input-eps" min="1" max="2000" step="50" value="1000">
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-header">
+                            <span>Threat Injection Rate</span>
+                            <span class="slider-val" id="val-threat">5%</span>
+                        </div>
+                        <input type="range" id="input-threat" min="0" max="0.5" step="0.01" value="0.05">
+                    </div>
+                    <button class="btn btn-save" id="btn-save-control">APPLY CONFIGS</button>
+                </div>
+
+                <!-- Manual Threat Injectors -->
+                <div class="control-group">
+                    <label class="group-title">Manual Threat Injection</label>
+                    <p class="section-desc">Instantly dispatch an attack behavior flow through the virtual environment.</p>
+                    <div class="attack-buttons-grid">
+                        <button class="btn btn-danger btn-attack" data-attack="sql_injection">SQL Injection (WAF)</button>
+                        <button class="btn btn-danger btn-attack" data-attack="brute_force">Brute Force Auth</button>
+                        <button class="btn btn-danger btn-attack" data-attack="powershell_malware">PowerShell LotL</button>
+                        <button class="btn btn-danger btn-attack" data-attack="ransomware">Ransomware Exec</button>
+                        <button class="btn btn-danger btn-attack" data-attack="insider_dump">Insider SQL Dump</button>
+                        <button class="btn btn-danger btn-attack" data-attack="impossible_travel">Impossible Travel</button>
+                    </div>
+                </div>
+
+                <!-- Entity Counts -->
+                <div class="entity-list">
+                    <h3>Active Virtual Nodes</h3>
+                    <div class="entity-row">
+                        <span>Customers Simulated</span>
+                        <strong id="entity-customers">0</strong>
+                    </div>
+                    <div class="entity-row">
+                        <span>Employees Simulated</span>
+                        <strong id="entity-employees">0</strong>
+                    </div>
+                    <div class="entity-row">
+                        <span>Branch ATMs Online</span>
+                        <strong id="entity-atms">0</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Panel: Real-Time Stream Terminal -->
+            <section class="panel stream-panel" id="stream-section">
+                <div class="panel-header">
+                    <h2>ECS Live Telemetry Stream</h2>
+                    <div class="terminal-actions">
+                        <button class="btn-text" id="btn-clear-terminal">Clear Terminal</button>
+                        <button class="btn-text" id="btn-pause-terminal">Pause Stream</button>
+                    </div>
+                </div>
+                <!-- Log Terminal Box -->
+                <div class="terminal-window">
+                    <div class="terminal-body" id="log-terminal">
+                        <div class="terminal-line system-msg">Connecting to BSES WebSocket log stream...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Configurations Editor -->
+            <section class="panel editor-panel" id="editor-section">
+                <div class="editor-tabs">
+                    <button class="tab-btn active" data-tab="tab-infra">Infrastructure topology (YAML)</button>
+                    <button class="tab-btn" data-tab="tab-attacks">Threat database (JSON)</button>
+                </div>
+                
+                <!-- Tab: Infrastructure Config -->
+                <div class="tab-content active" id="tab-infra">
+                    <p class="section-desc">Define corporate and retail network topology, database subnets, gateways, and ATM pools.</p>
+                    <textarea class="code-editor" id="code-infra" spellcheck="false"></textarea>
+                    <div class="editor-footer">
+                        <span class="editor-status" id="status-infra">Ready</span>
+                        <button class="btn btn-save" id="btn-save-infra">SAVE & HOT-RELOAD</button>
+                    </div>
+                </div>
+
+                <!-- Tab: Attack Config -->
+                <div class="tab-content" id="tab-attacks">
+                    <p class="section-desc">Manage MITRE ATT&CK techniques, LotL cmd arguments, SQL Injection queries, and target endpoints.</p>
+                    <textarea class="code-editor" id="code-attacks" spellcheck="false"></textarea>
+                    <div class="editor-footer">
+                        <span class="editor-status" id="status-attacks">Ready</span>
+                        <button class="btn btn-save" id="btn-save-attacks">SAVE & HOT-RELOAD</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>
